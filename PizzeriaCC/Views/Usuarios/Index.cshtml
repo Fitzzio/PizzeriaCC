@@ -1,53 +1,239 @@
 ﻿@model IEnumerable<PizzeriaCC.Models.Usuario>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Gestión de Usuarios";
 }
 
-<h1>Index</h1>
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1 class="display-5">
+                <i class="bi bi-people-fill text-primary"></i> Usuarios
+            </h1>
+            <p class="text-muted">Gestiona los clientes registrados en el sistema</p>
+        </div>
+        <div class="col-md-4 text-end">
+            <a asp-action="Create" class="btn btn-primary btn-lg">
+                <i class="bi bi-person-plus-fill"></i> Nuevo Usuario
+            </a>
+        </div>
+    </div>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Nombre)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Apellido)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Email)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.PasswordHash)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Nombre)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Apellido)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Email)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.PasswordHash)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle-fill"></i> @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <!-- Estadísticas -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card border-primary shadow-sm">
+                <div class="card-body text-center">
+                    <i class="bi bi-people display-4 text-primary"></i>
+                    <h3 class="mt-2">@Model.Count()</h3>
+                    <p class="text-muted mb-0">Total Usuarios</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-success shadow-sm">
+                <div class="card-body text-center">
+                    <i class="bi bi-envelope-check display-4 text-success"></i>
+                    <h3 class="mt-2">@Model.Count(u => !string.IsNullOrEmpty(u.Email))</h3>
+                    <p class="text-muted mb-0">Con Email</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-info shadow-sm">
+                <div class="card-body text-center">
+                    <i class="bi bi-cart-check display-4 text-info"></i>
+                    <h3 class="mt-2">@Model.Sum(u => u.Pedidos.Count)</h3>
+                    <p class="text-muted mb-0">Pedidos Totales</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-warning shadow-sm">
+                <div class="card-body text-center">
+                    <i class="bi bi-star-fill display-4 text-warning"></i>
+                    <h3 class="mt-2">
+                        @if (Model.Any())
+                        {
+                            var mejorCliente = Model.OrderByDescending(u => u.Pedidos.Count).FirstOrDefault();
+                            if (mejorCliente != null && mejorCliente.Pedidos.Any())
+                            {
+                                @mejorCliente.Pedidos.Count
+                            }
+                            else
+                            {
+                                <span>0</span>
+                            }
+                        }
+                        else
+                        {
+                            <span>0</span>
+                        }
+                    </h3>
+                    <p class="text-muted mb-0">Mejor Cliente</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="card shadow-sm">
+            <div class="card-body text-center py-5">
+                <i class="bi bi-inbox display-1 text-muted"></i>
+                <h3 class="mt-3">No hay usuarios registrados</h3>
+                <p class="text-muted">Comienza agregando tu primer usuario al sistema</p>
+                <a asp-action="Create" class="btn btn-primary btn-lg mt-3">
+                    <i class="bi bi-person-plus-fill"></i> Crear Primer Usuario
+                </a>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="card shadow-sm">
+            <div class="card-header bg-white">
+                <div class="row align-items-center">
+                    <div class="col">
+                        <h5 class="mb-0">Lista de Usuarios</h5>
+                    </div>
+                    <div class="col-auto">
+                        <input type="text" id="searchInput" class="form-control" placeholder="🔍 Buscar usuario...">
+                    </div>
+                </div>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0" id="usuariosTable">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="ps-4">
+                                    <i class="bi bi-person-badge"></i> Usuario
+                                </th>
+                                <th>
+                                    <i class="bi bi-envelope"></i> Email
+                                </th>
+                                <th class="text-center">
+                                    <i class="bi bi-cart"></i> Pedidos
+                                </th>
+                                <th class="text-center">
+                                    <i class="bi bi-cash-stack"></i> Total Gastado
+                                </th>
+                                <th class="text-center">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td class="ps-4">
+                                        <div class="d-flex align-items-center">
+                                            <div class="avatar-circle bg-primary text-white me-3">
+                                                @item.Nombre.Substring(0, 1)@item.Apellido.Substring(0, 1)
+                                            </div>
+                                            <div>
+                                                <strong>@item.Nombre @item.Apellido</strong>
+                                                <br />
+                                                <small class="text-muted">ID: @item.Id</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <i class="bi bi-envelope-fill text-muted me-1"></i>
+                                        @item.Email
+                                    </td>
+                                    <td class="text-center">
+                                        @if (item.Pedidos.Any())
+                                        {
+                                            <span class="badge bg-info rounded-pill">
+                                                @item.Pedidos.Count pedido(s)
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">Sin pedidos</span>
+                                        }
+                                    </td>
+                                    <td class="text-center">
+                                        @if (item.Pedidos.Any())
+                                        {
+                                            <strong class="text-success">S/ @item.Pedidos.Sum(p => p.Total).ToString("N2")</strong>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">S/ 0.00</span>
+                                        }
+                                    </td>
+                                    <td class="text-center">
+                                        <div class="btn-group" role="group">
+                                            <a asp-action="Details" asp-route-id="@item.Id"
+                                               class="btn btn-sm btn-outline-info"
+                                               title="Ver detalles">
+                                                <i class="bi bi-eye-fill"></i>
+                                            </a>
+                                            <a asp-action="Edit" asp-route-id="@item.Id"
+                                               class="btn btn-sm btn-outline-warning"
+                                               title="Editar">
+                                                <i class="bi bi-pencil-fill"></i>
+                                            </a>
+                                            <a asp-action="Delete" asp-route-id="@item.Id"
+                                               class="btn btn-sm btn-outline-danger"
+                                               title="Eliminar">
+                                                <i class="bi bi-trash-fill"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<style>
+    .avatar-circle {
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 1.1rem;
+    }
+
+    .card {
+        border: none;
+        border-radius: 10px;
+    }
+
+    .table > :not(caption) > * > * {
+        padding: 1rem 0.75rem;
+    }
+</style>
+
+@section Scripts {
+    <script>
+        // Búsqueda en tiempo real
+        document.getElementById('searchInput').addEventListener('keyup', function() {
+            const searchValue = this.value.toLowerCase();
+            const rows = document.querySelectorAll('#usuariosTable tbody tr');
+
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(searchValue) ? '' : 'none';
+            });
+        });
+    </script>
 }
-    </tbody>
-</table>

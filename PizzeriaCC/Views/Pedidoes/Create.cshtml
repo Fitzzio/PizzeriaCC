@@ -1,51 +1,240 @@
 ﻿@model PizzeriaCC.Models.Pedido
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Crear Pedido";
 }
 
-<h1>Create</h1>
+<h1>Crear Pedido</h1>
 
-<h4>Pedido</h4>
+<h4>Nuevo Pedido</h4>
 <hr />
 <div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
+    <div class="col-md-8">
+        <form asp-action="Create" id="formPedido" method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="UsuarioId" class="control-label"></label>
-                <select asp-for="UsuarioId" class ="form-control" asp-items="ViewBag.UsuarioId"></select>
+
+            <div class="card mb-3">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Información del Cliente</h5>
+                </div>
+                <div class="card-body">
+                    <div class="form-group mb-3">
+                        <label asp-for="UsuarioId" class="control-label">Usuario</label>
+                        <select asp-for="UsuarioId" class="form-control" asp-items="ViewBag.UsuarioId" required>
+                            <option value="">-- Seleccione un usuario --</option>
+                        </select>
+                        <span asp-validation-for="UsuarioId" class="text-danger"></span>
+                    </div>
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="Total" class="control-label"></label>
-                <input asp-for="Total" class="form-control" />
-                <span asp-validation-for="Total" class="text-danger"></span>
+
+            <div class="card mb-3">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">Pizzas del Pedido</h5>
+                </div>
+                <div class="card-body">
+                    <div id="pizzasContainer">
+                        <!-- Las pizzas se agregarán aquí dinámicamente -->
+                    </div>
+                    <button type="button" class="btn btn-success btn-sm mt-2" onclick="agregarPizza()">
+                        + Agregar Pizza
+                    </button>
+                    <div id="errorPizzas" class="text-danger mt-2" style="display:none;">
+                        Debe agregar al menos una pizza al pedido
+                    </div>
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="Estado" class="control-label"></label>
-                <input asp-for="Estado" class="form-control" />
-                <span asp-validation-for="Estado" class="text-danger"></span>
+
+            <div class="card mb-3">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">Detalles del Pedido</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label asp-for="Estado" class="control-label">Estado</label>
+                                <select asp-for="Estado" class="form-control" required>
+                                    <option value="">-- Seleccione estado --</option>
+                                    <option value="Pendiente" selected>Pendiente</option>
+                                    <option value="En Preparación">En Preparación</option>
+                                    <option value="En Camino">En Camino</option>
+                                    <option value="Entregado">Entregado</option>
+                                    <option value="Cancelado">Cancelado</option>
+                                </select>
+                                <span asp-validation-for="Estado" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label asp-for="MetodoPago" class="control-label">Método de Pago</label>
+                                <select asp-for="MetodoPago" class="form-control" required>
+                                    <option value="">-- Seleccione método de pago --</option>
+                                    <option value="Efectivo">Efectivo</option>
+                                    <option value="Tarjeta">Tarjeta</option>
+                                    <option value="Yape">Yape</option>
+                                    <option value="Plin">Plin</option>
+                                    <option value="Transferencia">Transferencia</option>
+                                </select>
+                                <span asp-validation-for="MetodoPago" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label asp-for="MotorizadoId" class="control-label">Motorizado (Opcional)</label>
+                        <select asp-for="MotorizadoId" class="form-control" asp-items="ViewBag.MotorizadoId">
+                            <option value="">-- Sin motorizado asignado --</option>
+                        </select>
+                        <span asp-validation-for="MotorizadoId" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label class="control-label">Total</label>
+                        <input type="text" id="totalDisplay" class="form-control form-control-lg fw-bold" readonly value="S/ 0.00" />
+                        <input type="hidden" asp-for="Total" id="totalHidden" value="0" />
+                    </div>
+                </div>
             </div>
+
             <div class="form-group">
-                <label asp-for="MetodoPago" class="control-label"></label>
-                <input asp-for="MetodoPago" class="form-control" />
-                <span asp-validation-for="MetodoPago" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="MotorizadoId" class="control-label"></label>
-                <select asp-for="MotorizadoId" class ="form-control" asp-items="ViewBag.MotorizadoId"></select>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
+                <button type="submit" class="btn btn-primary btn-lg">
+                    Crear Pedido
+                </button>
+                <a asp-action="Index" class="btn btn-secondary btn-lg">
+                    Cancelar
+                </a>
             </div>
         </form>
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        // Datos de pizzas desde el servidor
+        const pizzas = @Html.Raw(Json.Serialize(ViewBag.Pizzas ?? new List<object>()));
+        let contadorPizzas = 0;
+
+        function agregarPizza() {
+            const container = document.getElementById('pizzasContainer');
+
+            const pizzaHtml = `
+                <div class="card mb-2 pizza-item" id="pizza_${contadorPizzas}">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col-md-5">
+                                <label class="form-label">Pizza</label>
+                                <select name="pizzasSeleccionadas[${contadorPizzas}].PizzaId"
+                                        class="form-control pizza-select"
+                                        onchange="calcularTotal()"
+                                        required>
+                                    <option value="">-- Seleccione pizza --</option>
+                                    ${pizzas.map(p => `<option value="${p.id}" data-precio="${p.precioBase}">${p.nombre} - S/ ${p.precioBase.toFixed(2)}</option>`).join('')}
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Cantidad</label>
+                                <input type="number"
+                                       name="pizzasSeleccionadas[${contadorPizzas}].Cantidad"
+                                       class="form-control cantidad-input"
+                                       min="1"
+                                       value="1"
+                                       onchange="calcularTotal()"
+                                       required />
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Subtotal</label>
+                                <input type="text" class="form-control subtotal-display" readonly value="S/ 0.00" />
+                            </div>
+                            <div class="col-md-1">
+                                <label class="form-label">&nbsp;</label>
+                                <button type="button" class="btn btn-danger btn-sm w-100" onclick="eliminarPizza(${contadorPizzas})">
+                                    🗑️
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            container.insertAdjacentHTML('beforeend', pizzaHtml);
+            contadorPizzas++;
+            calcularTotal();
+            document.getElementById('errorPizzas').style.display = 'none';
+        }
+
+        function eliminarPizza(id) {
+            const elemento = document.getElementById(`pizza_${id}`);
+            if (elemento) {
+                elemento.remove();
+                calcularTotal();
+            }
+        }
+
+        function calcularTotal() {
+            let total = 0;
+            const pizzaItems = document.querySelectorAll('.pizza-item');
+
+            pizzaItems.forEach(item => {
+                const select = item.querySelector('.pizza-select');
+                const cantidadInput = item.querySelector('.cantidad-input');
+                const subtotalDisplay = item.querySelector('.subtotal-display');
+
+                if (select && select.value) {
+                    const selectedOption = select.options[select.selectedIndex];
+                    const precio = parseFloat(selectedOption.getAttribute('data-precio')) || 0;
+                    const cantidad = parseInt(cantidadInput.value) || 0;
+                    const subtotal = precio * cantidad;
+
+                    subtotalDisplay.value = `S/ ${subtotal.toFixed(2)}`;
+                    total += subtotal;
+                }
+            });
+
+            document.getElementById('totalDisplay').value = `S/ ${total.toFixed(2)}`;
+            document.getElementById('totalHidden').value = total.toFixed(2);
+        }
+
+        // Validación antes de enviar
+        document.getElementById('formPedido').addEventListener('submit', function(e) {
+            const pizzaItems = document.querySelectorAll('.pizza-item');
+
+            if (pizzaItems.length === 0) {
+                e.preventDefault();
+                document.getElementById('errorPizzas').style.display = 'block';
+                document.getElementById('errorPizzas').scrollIntoView({ behavior: 'smooth', block: 'center' });
+                return false;
+            }
+
+            // Validar que todas las pizzas tengan un valor seleccionado
+            let hayError = false;
+            pizzaItems.forEach(item => {
+                const select = item.querySelector('.pizza-select');
+                if (!select.value) {
+                    hayError = true;
+                }
+            });
+
+            if (hayError) {
+                e.preventDefault();
+                alert('Por favor seleccione una pizza en todos los campos');
+                return false;
+            }
+
+            return true;
+        });
+
+        // Agregar una pizza por defecto al cargar
+        window.addEventListener('load', function() {
+            if (pizzas && pizzas.length > 0) {
+                agregarPizza();
+            } else {
+                alert('No hay pizzas disponibles. Por favor, agregue pizzas primero.');
+            }
+        });
+    </script>
 }

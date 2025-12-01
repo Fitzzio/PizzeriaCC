@@ -1,47 +1,286 @@
 ﻿@model IEnumerable<PizzeriaCC.Models.Motorizado>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Gestión de Motorizados";
 }
 
-<h1>Index</h1>
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1 class="display-5">
+                <i class="bi bi-scooter text-info"></i> Motorizados
+            </h1>
+            <p class="text-muted">Gestiona el equipo de delivery de la pizzería</p>
+        </div>
+        <div class="col-md-4 text-end">
+            <a asp-action="Create" class="btn btn-info btn-lg text-white">
+                <i class="bi bi-person-plus-fill"></i> Nuevo Motorizado
+            </a>
+        </div>
+    </div>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Nombre)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Disponible)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.EntregasRealizadas)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Nombre)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Disponible)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.EntregasRealizadas)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle-fill"></i> @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <!-- Estadísticas -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card border-info shadow-sm">
+                <div class="card-body text-center">
+                    <i class="bi bi-scooter display-4 text-info"></i>
+                    <h3 class="mt-2">@Model.Count()</h3>
+                    <p class="text-muted mb-0">Total Motorizados</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-success shadow-sm">
+                <div class="card-body text-center">
+                    <i class="bi bi-check-circle display-4 text-success"></i>
+                    <h3 class="mt-2">@Model.Count(m => m.Disponible)</h3>
+                    <p class="text-muted mb-0">Disponibles</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-danger shadow-sm">
+                <div class="card-body text-center">
+                    <i class="bi bi-x-circle display-4 text-danger"></i>
+                    <h3 class="mt-2">@Model.Count(m => !m.Disponible)</h3>
+                    <p class="text-muted mb-0">No Disponibles</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-warning shadow-sm">
+                <div class="card-body text-center">
+                    <i class="bi bi-box-seam display-4 text-warning"></i>
+                    <h3 class="mt-2">@Model.Sum(m => m.EntregasRealizadas)</h3>
+                    <p class="text-muted mb-0">Entregas Totales</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="card shadow-sm">
+            <div class="card-body text-center py-5">
+                <i class="bi bi-scooter display-1 text-muted"></i>
+                <h3 class="mt-3">No hay motorizados registrados</h3>
+                <p class="text-muted">Agrega motorizados para gestionar las entregas</p>
+                <a asp-action="Create" class="btn btn-info btn-lg mt-3 text-white">
+                    <i class="bi bi-person-plus-fill"></i> Crear Primer Motorizado
+                </a>
+            </div>
+        </div>
+    }
+    else
+    {
+        <!-- Vista de Tarjetas -->
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+            @foreach (var item in Model)
+            {
+                <div class="col">
+                    <div class="card h-100 shadow-sm motorizado-card @(item.Disponible ? "border-success" : "border-secondary")">
+                        <div class="card-header @(item.Disponible ? "bg-success" : "bg-secondary") text-white">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0">
+                                    <i class="bi bi-person-badge"></i> @item.Nombre
+                                </h5>
+                                @if (item.Disponible)
+                                {
+                                    <span class="badge bg-light text-success">
+                                        <i class="bi bi-circle-fill"></i> Disponible
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-light text-danger">
+                                        <i class="bi bi-circle-fill"></i> Ocupado
+                                    </span>
+                                }
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="row mb-3">
+                                <div class="col-6">
+                                    <div class="stat-box text-center">
+                                        <i class="bi bi-box-seam text-warning fs-2"></i>
+                                        <h4 class="mt-2 mb-0">@item.EntregasRealizadas</h4>
+                                        <small class="text-muted">Entregas</small>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="stat-box text-center">
+                                        <i class="bi bi-truck text-info fs-2"></i>
+                                        <h4 class="mt-2 mb-0">@item.Pedidos.Count</h4>
+                                        <small class="text-muted">Pedidos</small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            @if (item.Pedidos.Any())
+                            {
+                                <div class="mb-3">
+                                    <small class="text-muted d-block mb-2">
+                                        <i class="bi bi-clock-history"></i> Últimos pedidos:
+                                    </small>
+                                    @foreach (var pedido in item.Pedidos.OrderByDescending(p => p.Fecha).Take(3))
+                                    {
+                                        <div class="d-flex justify-content-between align-items-center mb-1">
+                                            <small>
+                                                Pedido #@pedido.Id
+                                            </small>
+                                            <small>
+                                                <span class="badge @(pedido.Estado == "Entregado" ? "bg-success" : pedido.Estado == "En Camino" ? "bg-primary" : "bg-warning text-dark")">
+                                                    @pedido.Estado
+                                                </span>
+                                            </small>
+                                        </div>
+                                    }
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="alert alert-light mb-3 py-2">
+                                    <small class="text-muted">
+                                        <i class="bi bi-info-circle"></i> Sin pedidos asignados
+                                    </small>
+                                </div>
+                            }
+
+                            <div class="btn-group w-100" role="group">
+                                <a asp-action="Details" asp-route-id="@item.Id"
+                                   class="btn btn-sm btn-outline-info">
+                                    <i class="bi bi-eye-fill"></i> Ver
+                                </a>
+                                <a asp-action="Edit" asp-route-id="@item.Id"
+                                   class="btn btn-sm btn-outline-warning">
+                                    <i class="bi bi-pencil-fill"></i> Editar
+                                </a>
+                                <a asp-action="Delete" asp-route-id="@item.Id"
+                                   class="btn btn-sm btn-outline-danger">
+                                    <i class="bi bi-trash-fill"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <!-- Ranking de Motorizados -->
+        <div class="card shadow-sm mt-4">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0">
+                    <i class="bi bi-trophy-fill"></i> Ranking de Motorizados
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th>Posición</th>
+                                <th>Motorizado</th>
+                                <th class="text-center">Estado</th>
+                                <th class="text-center">Entregas</th>
+                                <th class="text-center">Pedidos Activos</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @{
+                                var ranking = Model.OrderByDescending(m => m.EntregasRealizadas).ToList();
+                                int posicion = 1;
+                            }
+                            @foreach (var motorizado in ranking)
+                            {
+                                <tr>
+                                    <td>
+                                        @if (posicion == 1)
+                                        {
+                                            <span class="badge bg-warning text-dark">
+                                                <i class="bi bi-trophy-fill"></i> #@posicion
+                                            </span>
+                                        }
+                                        else if (posicion == 2)
+                                        {
+                                            <span class="badge bg-secondary">
+                                                <i class="bi bi-award-fill"></i> #@posicion
+                                            </span>
+                                        }
+                                        else if (posicion == 3)
+                                        {
+                                            <span class="badge bg-danger">
+                                                <i class="bi bi-gem"></i> #@posicion
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-light text-dark">#@posicion</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <strong>@motorizado.Nombre</strong>
+                                    </td>
+                                    <td class="text-center">
+                                        @if (motorizado.Disponible)
+                                        {
+                                            <span class="badge bg-success">
+                                                <i class="bi bi-check-circle-fill"></i> Disponible
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-danger">
+                                                <i class="bi bi-x-circle-fill"></i> Ocupado
+                                            </span>
+                                        }
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="badge bg-primary rounded-pill">
+                                            @motorizado.EntregasRealizadas
+                                        </span>
+                                    </td>
+                                    <td class="text-center">
+                                        @motorizado.Pedidos.Count
+                                    </td>
+                                </tr>
+                                posicion++;
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<style>
+    .motorizado-card {
+        border-width: 2px;
+        border-radius: 12px;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+        .motorizado-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15) !important;
+        }
+
+    .stat-box {
+        padding: 10px;
+        border-radius: 8px;
+        background-color: #f8f9fa;
+    }
+
+    .card-header {
+        border-radius: 10px 10px 0 0 !important;
+    }
+</style>

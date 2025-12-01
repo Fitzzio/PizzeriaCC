@@ -1,48 +1,195 @@
 ﻿@model PizzeriaCC.Models.Usuario
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Nuevo Usuario";
 }
 
-<h1>Create</h1>
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <!-- Header -->
+            <div class="d-flex align-items-center mb-4">
+                <a asp-action="Index" class="btn btn-outline-secondary me-3">
+                    <i class="bi bi-arrow-left"></i>
+                </a>
+                <div>
+                    <h1 class="mb-0">
+                        <i class="bi bi-person-plus-fill text-primary"></i> Nuevo Usuario
+                    </h1>
+                    <p class="text-muted mb-0">Registra un nuevo cliente en el sistema</p>
+                </div>
+            </div>
 
-<h4>Usuario</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Nombre" class="control-label"></label>
-                <input asp-for="Nombre" class="form-control" />
-                <span asp-validation-for="Nombre" class="text-danger"></span>
+            <!-- Form Card -->
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-gradient-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-clipboard-data"></i> Información del Usuario
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    <form asp-action="Create" id="formUsuario">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                        <div class="row g-3">
+                            <!-- Nombre -->
+                            <div class="col-md-6">
+                                <div class="form-floating mb-3">
+                                    <input asp-for="Nombre" class="form-control" id="floatingNombre" placeholder="Juan" required />
+                                    <label for="floatingNombre">
+                                        <i class="bi bi-person"></i> Nombre
+                                    </label>
+                                    <span asp-validation-for="Nombre" class="text-danger small"></span>
+                                </div>
+                            </div>
+
+                            <!-- Apellido -->
+                            <div class="col-md-6">
+                                <div class="form-floating mb-3">
+                                    <input asp-for="Apellido" class="form-control" id="floatingApellido" placeholder="Pérez" required />
+                                    <label for="floatingApellido">
+                                        <i class="bi bi-person"></i> Apellido
+                                    </label>
+                                    <span asp-validation-for="Apellido" class="text-danger small"></span>
+                                </div>
+                            </div>
+
+                            <!-- Email -->
+                            <div class="col-12">
+                                <div class="form-floating mb-3">
+                                    <input asp-for="Email" type="email" class="form-control" id="floatingEmail" placeholder="correo@ejemplo.com" required />
+                                    <label for="floatingEmail">
+                                        <i class="bi bi-envelope-fill"></i> Correo Electrónico
+                                    </label>
+                                    <span asp-validation-for="Email" class="text-danger small"></span>
+                                    <div class="form-text">
+                                        <i class="bi bi-info-circle"></i> El correo debe ser único en el sistema
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Password -->
+                            <div class="col-12">
+                                <div class="form-floating mb-3">
+                                    <input asp-for="PasswordHash" type="password" class="form-control" id="floatingPassword" placeholder="Contraseña" required />
+                                    <label for="floatingPassword">
+                                        <i class="bi bi-lock-fill"></i> Contraseña
+                                    </label>
+                                    <span asp-validation-for="PasswordHash" class="text-danger small"></span>
+                                    <div class="form-text">
+                                        <i class="bi bi-shield-check"></i> Mínimo 6 caracteres recomendados
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Preview Card -->
+                        <div class="card bg-light mb-4">
+                            <div class="card-body">
+                                <h6 class="text-muted mb-3">
+                                    <i class="bi bi-eye"></i> Vista Previa
+                                </h6>
+                                <div class="d-flex align-items-center">
+                                    <div class="avatar-preview bg-primary text-white me-3">
+                                        <span id="previewInitials">??</span>
+                                    </div>
+                                    <div>
+                                        <strong id="previewName">Nombre Completo</strong><br />
+                                        <small class="text-muted" id="previewEmail">correo@ejemplo.com</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Buttons -->
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a asp-action="Index" class="btn btn-outline-secondary btn-lg">
+                                <i class="bi bi-x-circle"></i> Cancelar
+                            </a>
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="bi bi-check-circle-fill"></i> Crear Usuario
+                            </button>
+                        </div>
+                    </form>
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="Apellido" class="control-label"></label>
-                <input asp-for="Apellido" class="form-control" />
-                <span asp-validation-for="Apellido" class="text-danger"></span>
+
+            <!-- Info Card -->
+            <div class="card border-info mt-4">
+                <div class="card-body">
+                    <h6 class="card-title">
+                        <i class="bi bi-lightbulb text-warning"></i> Consejos
+                    </h6>
+                    <ul class="mb-0 small">
+                        <li>El email debe ser único para cada usuario</li>
+                        <li>Asegúrate de que el cliente confirme su correo electrónico</li>
+                        <li>La contraseña se almacenará de forma segura</li>
+                    </ul>
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="Email" class="control-label"></label>
-                <input asp-for="Email" class="form-control" />
-                <span asp-validation-for="Email" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="PasswordHash" class="control-label"></label>
-                <input asp-for="PasswordHash" class="form-control" />
-                <span asp-validation-for="PasswordHash" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
+        </div>
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
+<style>
+    .bg-gradient-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+
+    .avatar-preview {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        font-weight: bold;
+    }
+
+    .form-floating > label {
+        padding-left: 1rem;
+    }
+
+    .card {
+        border-radius: 15px;
+    }
+
+    .form-control:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+    }
+</style>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        // Vista previa en tiempo real
+        function updatePreview() {
+            const nombre = document.getElementById('floatingNombre').value || 'Nombre';
+            const apellido = document.getElementById('floatingApellido').value || 'Apellido';
+            const email = document.getElementById('floatingEmail').value || 'correo@ejemplo.com';
+
+            // Actualizar nombre completo
+            document.getElementById('previewName').textContent = nombre + ' ' + apellido;
+
+            // Actualizar email
+            document.getElementById('previewEmail').textContent = email;
+
+            // Actualizar iniciales
+            const iniciales = (nombre.charAt(0) + apellido.charAt(0)).toUpperCase();
+            document.getElementById('previewInitials').textContent = iniciales || '??';
+        }
+
+        // Escuchar cambios en los inputs
+        document.getElementById('floatingNombre').addEventListener('input', updatePreview);
+        document.getElementById('floatingApellido').addEventListener('input', updatePreview);
+        document.getElementById('floatingEmail').addEventListener('input', updatePreview);
+
+        // Inicializar vista previa
+        updatePreview();
+    </script>
 }

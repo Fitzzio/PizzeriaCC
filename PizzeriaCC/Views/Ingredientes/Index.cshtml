@@ -1,41 +1,195 @@
 ﻿@model IEnumerable<PizzeriaCC.Models.Ingrediente>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Gestión de Ingredientes";
 }
 
-<h1>Index</h1>
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1 class="display-5">
+                <i class="bi bi-egg-fried text-warning"></i> Ingredientes
+            </h1>
+            <p class="text-muted">Gestiona los ingredientes disponibles para personalizar pizzas</p>
+        </div>
+        <div class="col-md-4 text-end">
+            <a asp-action="Create" class="btn btn-warning btn-lg">
+                <i class="bi bi-plus-circle-fill"></i> Nuevo Ingrediente
+            </a>
+        </div>
+    </div>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Nombre)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.PrecioExtra)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Nombre)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.PrecioExtra)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle-fill"></i> @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <!-- Estadísticas -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card border-warning shadow-sm">
+                <div class="card-body text-center">
+                    <i class="bi bi-egg-fried display-4 text-warning"></i>
+                    <h3 class="mt-2">@Model.Count()</h3>
+                    <p class="text-muted mb-0">Total Ingredientes</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-success shadow-sm">
+                <div class="card-body text-center">
+                    <i class="bi bi-cash display-4 text-success"></i>
+                    <h3 class="mt-2">S/ @(Model.Any() ? Model.Average(i => i.PrecioExtra).ToString("N2") : "0.00")</h3>
+                    <p class="text-muted mb-0">Precio Extra Promedio</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-info shadow-sm">
+                <div class="card-body text-center">
+                    <i class="bi bi-star-fill display-4 text-info"></i>
+                    <h3 class="mt-2">
+                        @if (Model.Any())
+                        {
+                            var masUsado = Model.OrderByDescending(i => i.IdPizzas.Count).FirstOrDefault();
+                            @(masUsado?.IdPizzas.Count ?? 0)
+                        }
+                        else
+                        {
+                            <span>0</span>
+                        }
+                    </h3>
+                    <p class="text-muted mb-0">Más Usado en Pizzas</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="card shadow-sm">
+            <div class="card-body text-center py-5">
+                <i class="bi bi-basket display-1 text-muted"></i>
+                <h3 class="mt-3">No hay ingredientes registrados</h3>
+                <p class="text-muted">Agrega ingredientes para permitir personalización de pizzas</p>
+                <a asp-action="Create" class="btn btn-warning btn-lg mt-3">
+                    <i class="bi bi-plus-circle-fill"></i> Crear Primer Ingrediente
+                </a>
+            </div>
+        </div>
+    }
+    else
+    {
+        <!-- Vista de Tarjetas -->
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 g-4">
+            @foreach (var item in Model)
+            {
+                <div class="col">
+                    <div class="card h-100 shadow-sm ingrediente-card">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="ingrediente-icon me-3">
+                                    <i class="bi bi-egg-fried"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h5 class="card-title mb-1">@item.Nombre</h5>
+                                    <p class="card-text text-muted small mb-0">ID: @item.Id</p>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="text-muted small">Precio Extra:</span>
+                                    <span class="badge bg-success fs-6">+ S/ @item.PrecioExtra.ToString("N2")</span>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <small class="text-muted">Usado en:</small>
+                                @if (item.IdPizzas.Any())
+                                {
+                                    <div class="mt-1">
+                                        <span class="badge bg-info">
+                                            @item.IdPizzas.Count pizza(s)
+                                        </span>
+                                    </div>
+                                    <div class="mt-2">
+                                        @foreach (var pizza in item.IdPizzas.Take(2))
+                                        {
+                                            <small class="d-block text-muted">
+                                                <i class="bi bi-pizza"></i> @pizza.Nombre
+                                            </small>
+                                        }
+                                        @if (item.IdPizzas.Count > 2)
+                                        {
+                                            <small class="d-block text-muted fst-italic">
+                                                +@(item.IdPizzas.Count - 2) más...
+                                            </small>
+                                        }
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="mt-1">
+                                        <small class="text-muted fst-italic">No usado aún</small>
+                                    </div>
+                                }
+                            </div>
+
+                            <div class="btn-group w-100 mt-auto" role="group">
+                                <a asp-action="Details" asp-route-id="@item.Id"
+                                   class="btn btn-sm btn-outline-info">
+                                    <i class="bi bi-eye-fill"></i>
+                                </a>
+                                <a asp-action="Edit" asp-route-id="@item.Id"
+                                   class="btn btn-sm btn-outline-warning">
+                                    <i class="bi bi-pencil-fill"></i>
+                                </a>
+                                <a asp-action="Delete" asp-route-id="@item.Id"
+                                   class="btn btn-sm btn-outline-danger">
+                                    <i class="bi bi-trash-fill"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+<style>
+    .ingrediente-card {
+        border: none;
+        border-radius: 12px;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+        .ingrediente-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1) !important;
+        }
+
+    .ingrediente-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 12px;
+        background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+        .ingrediente-icon i {
+            font-size: 1.5rem;
+            color: #d63031;
+        }
+
+    .card-title {
+        font-weight: 600;
+        color: #2c3e50;
+    }
+</style>

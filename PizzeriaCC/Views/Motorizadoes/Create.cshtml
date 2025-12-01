@@ -1,38 +1,255 @@
 ﻿@model PizzeriaCC.Models.Motorizado
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Nuevo Motorizado";
 }
 
-<h1>Create</h1>
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-7">
+            <!-- Header -->
+            <div class="d-flex align-items-center mb-4">
+                <a asp-action="Index" class="btn btn-outline-info me-3">
+                    <i class="bi bi-arrow-left"></i>
+                </a>
+                <div>
+                    <h1 class="mb-0">
+                        <i class="bi bi-scooter text-info"></i> Nuevo Motorizado
+                    </h1>
+                    <p class="text-muted mb-0">Registra un nuevo repartidor en el equipo</p>
+                </div>
+            </div>
 
-<h4>Motorizado</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Nombre" class="control-label"></label>
-                <input asp-for="Nombre" class="form-control" />
-                <span asp-validation-for="Nombre" class="text-danger"></span>
+            <!-- Form Card -->
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-gradient-info text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-person-badge"></i> Información del Motorizado
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    <form asp-action="Create" id="formMotorizado">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                        <!-- Nombre -->
+                        <div class="form-floating mb-4">
+                            <input asp-for="Nombre" class="form-control form-control-lg" id="floatingNombre" placeholder="Carlos Ruiz" required />
+                            <label for="floatingNombre">
+                                <i class="bi bi-person-fill"></i> Nombre Completo
+                            </label>
+                            <span asp-validation-for="Nombre" class="text-danger small"></span>
+                        </div>
+
+                        <!-- Disponibilidad -->
+                        <div class="card bg-light mb-4">
+                            <div class="card-body">
+                                <h6 class="mb-3">
+                                    <i class="bi bi-toggles"></i> Estado Inicial
+                                </h6>
+                                <div class="form-check form-switch">
+                                    <input asp-for="Disponible" class="form-check-input" type="checkbox" role="switch"
+                                           id="switchDisponible" checked style="width: 3rem; height: 1.5rem;">
+                                    <label class="form-check-label ms-2" for="switchDisponible" id="labelDisponible">
+                                        <span class="badge bg-success">
+                                            <i class="bi bi-check-circle-fill"></i> Disponible para entregas
+                                        </span>
+                                    </label>
+                                </div>
+                                <small class="text-muted d-block mt-2">
+                                    <i class="bi bi-info-circle"></i> El motorizado podrá recibir pedidos inmediatamente
+                                </small>
+                            </div>
+                        </div>
+
+                        <!-- Entregas Realizadas -->
+                        <div class="mb-4">
+                            <label class="form-label">
+                                <i class="bi bi-box-seam"></i> Entregas Realizadas
+                            </label>
+                            <div class="input-group input-group-lg">
+                                <span class="input-group-text bg-info text-white">
+                                    <i class="bi bi-truck"></i>
+                                </span>
+                                <input asp-for="EntregasRealizadas" type="number" class="form-control"
+                                       id="floatingEntregas" placeholder="0" min="0" value="0" />
+                            </div>
+                            <span asp-validation-for="EntregasRealizadas" class="text-danger small"></span>
+                            <div class="form-text">
+                                <i class="bi bi-info-circle"></i> Si es un repartidor nuevo, deja este valor en 0
+                            </div>
+                        </div>
+
+                        <!-- Preview Card -->
+                        <div class="card bg-light mb-4">
+                            <div class="card-body">
+                                <h6 class="text-muted mb-3">
+                                    <i class="bi bi-eye"></i> Vista Previa de la Tarjeta
+                                </h6>
+                                <div class="card preview-motorizado-card border-info">
+                                    <div class="card-header bg-info text-white">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <h5 class="mb-0">
+                                                <i class="bi bi-person-badge"></i> <span id="previewNombre">Nombre del Motorizado</span>
+                                            </h5>
+                                            <span id="previewBadge" class="badge bg-light text-success">
+                                                <i class="bi bi-circle-fill"></i> Disponible
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-6">
+                                                <div class="stat-box-preview text-center">
+                                                    <i class="bi bi-box-seam text-warning fs-2"></i>
+                                                    <h4 class="mt-2 mb-0" id="previewEntregas">0</h4>
+                                                    <small class="text-muted">Entregas</small>
+                                                </div>
+                                            </div>
+                                            <div class="col-6">
+                                                <div class="stat-box-preview text-center">
+                                                    <i class="bi bi-truck text-info fs-2"></i>
+                                                    <h4 class="mt-2 mb-0">0</h4>
+                                                    <small class="text-muted">Pedidos</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Buttons -->
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a asp-action="Index" class="btn btn-outline-secondary btn-lg">
+                                <i class="bi bi-x-circle"></i> Cancelar
+                            </a>
+                            <button type="submit" class="btn btn-info btn-lg text-white">
+                                <i class="bi bi-check-circle-fill"></i> Registrar Motorizado
+                            </button>
+                        </div>
+                    </form>
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="EntregasRealizadas" class="control-label"></label>
-                <input asp-for="EntregasRealizadas" class="form-control" />
-                <span asp-validation-for="EntregasRealizadas" class="text-danger"></span>
+
+            <!-- Info Cards -->
+            <div class="row mt-4">
+                <div class="col-md-6">
+                    <div class="card border-success">
+                        <div class="card-body">
+                            <h6 class="card-title">
+                                <i class="bi bi-check-circle text-success"></i> Requisitos
+                            </h6>
+                            <ul class="mb-0 small">
+                                <li>Licencia de conducir vigente</li>
+                                <li>Vehículo en buen estado</li>
+                                <li>Disponibilidad horaria</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card border-warning">
+                        <div class="card-body">
+                            <h6 class="card-title">
+                                <i class="bi bi-lightbulb text-warning"></i> Recuerda
+                            </h6>
+                            <p class="mb-0 small">
+                                Podrás cambiar el estado de disponibilidad del motorizado en cualquier momento desde la sección de edición.
+                            </p>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
+        </div>
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
+<style>
+    .bg-gradient-info {
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    }
+
+    .preview-motorizado-card {
+        border-width: 2px;
+        border-radius: 12px;
+        overflow: hidden;
+    }
+
+        .preview-motorizado-card .card-header {
+            border-radius: 10px 10px 0 0 !important;
+        }
+
+    .stat-box-preview {
+        padding: 10px;
+        border-radius: 8px;
+        background-color: #f8f9fa;
+    }
+
+    .card {
+        border-radius: 15px;
+    }
+
+    .form-control:focus {
+        border-color: #4facfe;
+        box-shadow: 0 0 0 0.2rem rgba(79, 172, 254, 0.25);
+    }
+
+    .form-check-input:checked {
+        background-color: #198754;
+        border-color: #198754;
+    }
+
+    .form-check-input:focus {
+        box-shadow: 0 0 0 0.2rem rgba(79, 172, 254, 0.25);
+    }
+</style>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        // Vista previa en tiempo real
+        function updatePreview() {
+            const nombre = document.getElementById('floatingNombre').value || 'Nombre del Motorizado';
+            const entregas = document.getElementById('floatingEntregas').value || '0';
+            const disponible = document.getElementById('switchDisponible').checked;
+
+            document.getElementById('previewNombre').textContent = nombre;
+            document.getElementById('previewEntregas').textContent = entregas;
+
+            // Actualizar badge de disponibilidad
+            const badge = document.getElementById('previewBadge');
+            if (disponible) {
+                badge.className = 'badge bg-light text-success';
+                badge.innerHTML = '<i class="bi bi-circle-fill"></i> Disponible';
+            } else {
+                badge.className = 'badge bg-light text-danger';
+                badge.innerHTML = '<i class="bi bi-circle-fill"></i> Ocupado';
+            }
+        }
+
+        // Actualizar label del switch
+        function updateSwitch() {
+            const disponible = document.getElementById('switchDisponible').checked;
+            const label = document.getElementById('labelDisponible');
+
+            if (disponible) {
+                label.innerHTML = '<span class="badge bg-success"><i class="bi bi-check-circle-fill"></i> Disponible para entregas</span>';
+            } else {
+                label.innerHTML = '<span class="badge bg-danger"><i class="bi bi-x-circle-fill"></i> No disponible</span>';
+            }
+
+            updatePreview();
+        }
+
+        // Escuchar cambios
+        document.getElementById('floatingNombre').addEventListener('input', updatePreview);
+        document.getElementById('floatingEntregas').addEventListener('input', updatePreview);
+        document.getElementById('switchDisponible').addEventListener('change', updateSwitch);
+
+        // Inicializar
+        updatePreview();
+    </script>
 }

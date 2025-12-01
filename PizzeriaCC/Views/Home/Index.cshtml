@@ -1,8 +1,228 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Dashboard - PizzeriaCC";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="container-fluid">
+    <!-- Hero Section -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="hero-card">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h1 class="display-3 fw-bold mb-3">
+                            <i class="bi bi-pizza"></i> PizzeriaCC
+                        </h1>
+                        <p class="lead text-muted mb-4">
+                            Sistema de Gestión de Pedidos de Pizzería
+                        </p>
+                        <p class="mb-4">
+                            Administra pedidos, usuarios, pizzas, ingredientes y motorizados de forma eficiente.
+                        </p>
+                        <div class="d-flex gap-3">
+                            <a asp-controller="Pedidoes" asp-action="Create" class="btn btn-primary btn-lg">
+                                <i class="bi bi-plus-circle-fill"></i> Nuevo Pedido
+                            </a>
+                            <a asp-controller="Pedidoes" asp-action="Index" class="btn btn-outline-primary btn-lg">
+                                <i class="bi bi-list-ul"></i> Ver Pedidos
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-md-4 text-center d-none d-md-block">
+                        <i class="bi bi-shop-window display-1 text-primary" style="font-size: 10rem; opacity: 0.1;"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Módulos Principales -->
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4 mb-5">
+        <!-- Pedidos -->
+        <div class="col">
+            <a asp-controller="Pedidoes" asp-action="Index" class="text-decoration-none">
+                <div class="module-card bg-gradient-primary">
+                    <div class="module-icon">
+                        <i class="bi bi-receipt"></i>
+                    </div>
+                    <h3>Pedidos</h3>
+                    <p class="text-white-50">Gestiona todos los pedidos</p>
+                    <div class="module-arrow">
+                        <i class="bi bi-arrow-right-circle-fill"></i>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <!-- Usuarios -->
+        <div class="col">
+            <a asp-controller="Usuarios" asp-action="Index" class="text-decoration-none">
+                <div class="module-card bg-gradient-success">
+                    <div class="module-icon">
+                        <i class="bi bi-people-fill"></i>
+                    </div>
+                    <h3>Usuarios</h3>
+                    <p class="text-white-50">Administra clientes</p>
+                    <div class="module-arrow">
+                        <i class="bi bi-arrow-right-circle-fill"></i>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <!-- Pizzas -->
+        <div class="col">
+            <a asp-controller="Pizzas" asp-action="Index" class="text-decoration-none">
+                <div class="module-card bg-gradient-danger">
+                    <div class="module-icon">
+                        <i class="bi bi-pizza"></i>
+                    </div>
+                    <h3>Pizzas</h3>
+                    <p class="text-white-50">Menú de pizzas</p>
+                    <div class="module-arrow">
+                        <i class="bi bi-arrow-right-circle-fill"></i>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <!-- Ingredientes -->
+        <div class="col">
+            <a asp-controller="Ingredientes" asp-action="Index" class="text-decoration-none">
+                <div class="module-card bg-gradient-warning">
+                    <div class="module-icon">
+                        <i class="bi bi-egg-fried"></i>
+                    </div>
+                    <h3>Ingredientes</h3>
+                    <p class="text-dark-50">Gestiona ingredientes</p>
+                    <div class="module-arrow">
+                        <i class="bi bi-arrow-right-circle-fill"></i>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <!-- Motorizados -->
+        <div class="col">
+            <a asp-controller="Motorizadoes" asp-action="Index" class="text-decoration-none">
+                <div class="module-card bg-gradient-info">
+                    <div class="module-icon">
+                        <i class="bi bi-scooter"></i>
+                    </div>
+                    <h3>Motorizados</h3>
+                    <p class="text-white-50">Equipo de delivery</p>
+                    <div class="module-arrow">
+                        <i class="bi bi-arrow-right-circle-fill"></i>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+
 </div>
+
+<style>
+    .hero-card {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 4rem 3rem;
+        border-radius: 20px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+    }
+
+    .module-card {
+        padding: 2rem;
+        border-radius: 15px;
+        color: white;
+        position: relative;
+        overflow: hidden;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        min-height: 200px;
+        display: flex;
+        flex-direction: column;
+    }
+
+        .module-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+        }
+
+    .module-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        opacity: 0.9;
+    }
+
+    .module-card h3 {
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+
+    .module-arrow {
+        position: absolute;
+        bottom: 1.5rem;
+        right: 1.5rem;
+        font-size: 2rem;
+        opacity: 0.7;
+        transition: transform 0.3s ease;
+    }
+
+    .module-card:hover .module-arrow {
+        transform: translateX(5px);
+    }
+
+    .bg-gradient-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+
+    .bg-gradient-success {
+        background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+    }
+
+    .bg-gradient-danger {
+        background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%);
+    }
+
+    .bg-gradient-warning {
+        background: linear-gradient(135deg, #f2994a 0%, #f2c94c 100%);
+    }
+
+    .bg-gradient-info {
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    }
+
+    .feature-card {
+        background: white;
+        padding: 2rem;
+        border-radius: 15px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        transition: transform 0.3s ease;
+        height: 100%;
+    }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+        }
+
+    .feature-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        color: white;
+        margin-bottom: 1rem;
+    }
+
+    .feature-card h4 {
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: #2c3e50;
+    }
+
+    .text-dark-50 {
+        color: rgba(0,0,0,0.5) !important;
+    }
+</style>
